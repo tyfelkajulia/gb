@@ -14,6 +14,12 @@ public class WeatherResponse {
         this.temperature = temperature;
     }
 
+    public WeatherResponse(String city, String localdate, int temperature) {
+        this.city = city;
+        this.date = localdate;
+        this.temperature = temperature;
+    }
+
     public String getCity() {
         return city;
     }
@@ -44,5 +50,15 @@ public class WeatherResponse {
 
     public void setTemperature(int temperature) {
         this.temperature = temperature;
+    }
+
+    @Override
+    public String toString() {
+        return "WeatherResponse{" +
+                "city='" + city + '\'' +
+                ", date='" + date + '\'' +
+                ", text='" + text + '\'' +
+                ", temperature=" + temperature +
+                '}';
     }
 }

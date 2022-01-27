@@ -8,7 +8,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.List;
 
 public class AccuweatherModel {
     //http://dataservice.accuweather.com/forecasts/v1/daily/1day/28573
@@ -27,8 +29,13 @@ public class AccuweatherModel {
 
     private static final OkHttpClient okHttpClient = new OkHttpClient();
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private DataBaseRepository dataBaseRepository = new DataBaseRepository();
 
-    public void getWeather(String city, int period) throws IOException {
+    public List<WeatherResponse> getSavedToDBWeather() {
+        return dataBaseRepository.getSavedToDBWeather();
+    }
+
+    public void getWeather(String city, int period) throws IOException, SQLException {
         String foundCity = detectCityKey(city);
         HttpUrl httpUrl = new HttpUrl.Builder()
                 .scheme(PROTOKOL)
@@ -52,7 +59,9 @@ public class AccuweatherModel {
          int index = 0;
          while(iterator.hasNext() || index <= period){
              JsonNode item = iterator.next();
-             System.out.println("В Городе: "+ city + " на дату: " + item.get("Date") + " ожидается " + item.get("Day").get("IconPhrase") + "с температурой " + item.get("Temperature").get("Maximum").get("Value"));
+             WeatherResponse weather = new WeatherResponse(city, item.get("Date").asText(), item.get("Day").get("IconPhrase").asText(), item.get("Temperature").get("Maximum").get("Value").asInt());
+             System.out.println(weather);
+             dataBaseRepository.saveWeatherToDataBase(weather);
              index++;
          }
     }
